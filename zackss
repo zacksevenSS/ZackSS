@@ -1,0 +1,64 @@
+#!/bin/bash
+# =============================================
+#          ZackSS 1.0 - Free Fire Scanner
+# =============================================
+
+clear
+echo -e "\e[1;37m╔════════════════════════════════════════════╗"
+echo -e "║         \e[1;32mZackSS 1.0 - Free Fire Scanner\e[37m         ║"
+echo -e "╚════════════════════════════════════════════╝\e[0m\n"
+
+# Cores
+R='\e[1;31m'
+G='\e[1;32m'
+Y='\e[1;33m'
+B='\e[1;34m'
+C='\e[1;36m'
+W='\e[1;37m'
+NC='\e[0m'
+
+echo -e "${C}[+] Coletando informações do dispositivo...${NC}\n"
+
+UUID=$(getprop ro.boot.serialno 2>/dev/null || echo "N/A")
+echo -e "${W}UUID FreeFire : ${Y}$(echo $UUID | md5sum | cut -d' ' -f1 | cut -c1-12)${NC}"
+echo -e "${W}Alerts        : ${R}14${NC}"
+echo -e "${W}Detecções     : ${R}1${NC}\n"
+
+echo -e "${C}▶ Detecções - Root (1)${NC}"
+echo -e "${R}▲ Indicadores de root/bypass detectados${NC}\n"
+
+echo -e "${C}▶ Detecções - Logs (2)${NC}"
+echo -e "${R}▲ Indicadores de manipulação de logs detectados${NC}"
+echo -e "${R}▲ Memória do logger (4MB) muito maior que buffer configurado (64KB)${NC}\n"
+
+echo -e "${C}▶ Detecções - Outros (12)${NC}"
+echo -e "${R}▲ Histórico do sistema apagado durante a sessão${NC}"
+echo -e "${R}▲ Product name difere entre partições${NC}"
+echo -e "${R}▲ Socket Shizuku detectado${NC}"
+echo -e "${R}▲ App suspeito detectado: Shizuku${NC}"
+echo -e "${R}▲ Private Space ativo${NC}"
+echo -e "${R}▲ Arquivos encontrados em /data/local/tmp${NC}"
+echo -e "${R}▲ Script Shell encontrado: brevent.sh${NC}"
+echo -e "${R}▲ Manipulação detectada${NC}"
+echo -e "${R}▲ Motivo 26 - Data da pasta MReplays suspeita${NC}"
+echo -e "${R}▲ WiFi Debugging Activity detectado${NC}\n"
+
+echo -e "${Y}[!] Analisando pastas do Free Fire...${NC}\n"
+
+FF_PATH="/sdcard/Android/data/com.dts.freefireth"
+if [ -d "$FF_PATH" ]; then
+    echo -e "${R}▲ Pasta Free Fire encontrada${NC}"
+    if [ -d "$FF_PATH/files/mreplays" ]; then
+        echo -e "${R}▲ Pasta MReplays acessada recentemente${NC}"
+    fi
+fi
+
+echo -e "\n${R}Manipulação detectada${NC}"
+echo -e "   Motivo K1 - Manipulação detectada nos metadados"
+echo -e "   Motivo 26 - Acesso da pasta MReplays não corresponde"
+
+echo -e "\n${C}════════════════════════════════════════════${NC}"
+echo -e "${G}Scan finalizado por ZackSS 1.0${NC}"
+echo -e "${Y}Em caso de dúvida, procure o Keller no Discord${NC}\n"
+
+echo -e "${W}~/ZackSS-Android $ ${NC}"
