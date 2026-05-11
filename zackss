@@ -18,7 +18,7 @@ cat << "EOF"
 ║   ╚══════╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝ ║
 ║                                                            ║
 ║                        ZACKSS 1.3                          ║
-║                 Free Fire Analyzer                         ║
+║                 Free Fire Analyzer                        ║
 ╚════════════════════════════════════════════════════════════╝
 EOF
 echo -e "\e[0m"
@@ -92,6 +92,6 @@ else
 fi
 
 echo -e "\n${G}Scan finalizado por ZackSS 1.3${NC}"
-echo -e "${Y}Em caso de dúvida, procure o Keller no Discord${NC}\n"
+echo -e "${Y}Em caso de dúvida, procure o Zack no Discord${NC}\n"
 
 echo -e "${W}~/ZackSS-Android $ ${NC}"
