@@ -1,0 +1,66 @@
+#!/bin/bash
+# =============================================
+#          ZackSS 1.2 - Free Fire Scanner
+# =============================================
+
+clear
+
+# Banner
+echo -e "\e[1;36m"
+cat << "EOF"
+╔════════════════════════════════════════════════════════════╗
+║                                                            ║
+║   ███████╗ █████╗  ██████╗██╗  ██╗███████╗███████╗███████╗ ║
+║   ╚══███╔╝██╔══██╗██╔════╝██║ ██╔╝██╔════╝██╔════╝██╔════╝ ║
+║     ███╔╝ ███████║██║     █████╔╝ █████╗  ███████╗███████╗ ║
+║    ███╔╝  ██╔══██║██║     ██╔═██╗ ██╔══╝  ╚════██║╚════██║ ║
+║   ███████╗██║  ██║╚██████╗██║  ██╗███████╗███████║███████║ ║
+║   ╚══════╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝ ║
+║                                                            ║
+║                        ZACKSS 1.2                          ║
+║                 Free Fire Analyzer                         ║
+╚════════════════════════════════════════════════════════════╝
+EOF
+echo -e "\e[0m"
+
+R='\e[1;31m'
+G='\e[1;32m'
+Y='\e[1;33m'
+C='\e[1;36m'
+W='\e[1;37m'
+NC='\e[0m'
+
+echo -e "${C}[+] Preparando ambiente...${NC}"
+pkg install -y coreutils toybox curl > /dev/null 2>&1
+
+echo -e "${C}[+] Iniciando análise real...\n${NC}"
+
+echo -e "${W}Modelo         : ${Y}$(getprop ro.product.model 2>/dev/null || echo "N/A")${NC}"
+echo -e "${W}Android Version: ${Y}$(getprop ro.build.version.release 2>/dev/null || echo "N/A")${NC}\n"
+
+DETECCOES=0
+
+echo -e "${C}▶ Verificando Root / Bypass...${NC}"
+if [ -d "/data/adb" ] || command -v su >/dev/null 2>&1; then
+    echo -e "${R}▲ Indicadores de root/bypass detectados${NC}"
+    ((DETECCOES++))
+else
+    echo -e "${G} Nenhum sinal óbvio de root encontrado${NC}"
+fi
+
+echo -e "${C}▶ Verificando WiFi Debugging...${NC}"
+if getprop service.adb.tcp.port 2>/dev/null | grep -q "[0-9]"; then
+    echo -e "${R}▲ WiFi Debugging ATIVO${NC}"
+    ((DETECCOES++))
+else
+    echo -e "${G} WiFi Debugging não detectado${NC}"
+fi
+
+echo -e "\n${C}▶ Analisando Free Fire...${NC}"
+if [ -d "/sdcard/Android/data/com.dts.freefireth" ]; then
+    echo -e "${R}▲ Pasta Free Fire encontrada${NC}"
+    ((DETECCOES++))
+fi
+
+echo -e "\n${C}════════════════════════════════════════════${NC}"
+if [ $DETECCOES -gt
