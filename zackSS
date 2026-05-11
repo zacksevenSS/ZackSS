@@ -1,0 +1,98 @@
+#!/bin/bash
+# =============================================
+#          ZackSS 1.1 - Free Fire Scanner
+# =============================================
+
+clear
+
+# Banner
+echo -e "\e[1;36m"
+cat << "EOF"
+╔════════════════════════════════════════════════════════════╗
+║                                                            ║
+║   ███████╗ █████╗  ██████╗██╗  ██╗███████╗███████╗███████╗ ║
+║   ╚══███╔╝██╔══██╗██╔════╝██║ ██╔╝██╔════╝██╔════╝██╔════╝ ║
+║     ███╔╝ ███████║██║     █████╔╝ █████╗  ███████╗███████╗ ║
+║    ███╔╝  ██╔══██║██║     ██╔═██╗ ██╔══╝  ╚════██║╚════██║ ║
+║   ███████╗██║  ██║╚██████╗██║  ██╗███████╗███████║███████║ ║
+║   ╚══════╝╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝ ║
+║                                                            ║
+║                        ZACKSS 1.1                          ║
+║                 Free Fire Analyzer                         ║
+╚════════════════════════════════════════════════════════════╝
+EOF
+echo -e "\e[0m"
+
+R='\e[1;31m'
+G='\e[1;32m'
+Y='\e[1;33m'
+C='\e[1;36m'
+W='\e[1;37m'
+NC='\e[0m'
+
+echo -e "${C}[+] Iniciando análise real do dispositivo...\n${NC}"
+
+# ===================== INFORMAÇÕES =====================
+echo -e "${C}[+] Coletando informações...${NC}"
+echo -e "${W}Modelo         : ${Y}$(getprop ro.product.model)${NC}"
+echo -e "${W}Android Version: ${Y}$(getprop ro.build.version.release)${NC}"
+echo -e "${W}UUID FreeFire  : ${Y}$(getprop ro.boot.serialno 2>/dev/null | md5sum | cut -c1-12 || echo "N/A")${NC}\n"
+
+# ===================== VERIFICAÇÕES REAIS =====================
+DETECCOES=0
+
+echo -e "${C}▶ Verificando Root / Bypass...${NC}"
+if [ -d "/data/adb" ] || command -v su >/dev/null 2>&1; then
+    echo -e "${R}▲ Indicadores de root detectados${NC}"
+    ((DETECCOES++))
+fi
+
+echo -e "${C}▶ Verificando WiFi Debugging...${NC}"
+if getprop service.adb.tcp.port | grep -q "[0-9]"; then
+    echo -e "${R}▲ WiFi Debugging (ADB Wireless) ATIVO${NC}"
+    ((DETECCOES++))
+else
+    echo -e "${G} WiFi Debugging não detectado${NC}"
+fi
+
+# Free Fire Paths
+echo -e "\n${C}▶ Analisando Free Fire...${NC}"
+FF_PATHS=("/sdcard/Android/data/com.dts.freefireth" "/sdcard/Android/data/com.dts.freefire")
+
+for path in "${FF_PATHS[@]}"; do
+    if [ -d "$path" ]; then
+        echo -e "${R}▲ Pasta Free Fire encontrada: $path${NC}"
+        ((DETECCOES++))
+        
+        # Verificar MReplays
+        if [ -d "$path/files/mreplays" ]; then
+            echo -e "${R}▲ Pasta MReplays encontrada${NC}"
+            echo -e "   Último acesso: $(stat -c %y "$path/files/mreplays" 2>/dev/null | cut -d' ' -f1,2 || echo "N/A")"
+        fi
+    fi
+done
+
+# Arquivos suspeitos comuns
+echo -e "\n${C}▶ Procurando arquivos suspeitos...${NC}"
+SUSP_FILES=("/data/local/tmp/brevent.sh" "/data/local/tmp/magisk" "/sdcard/.android" "/sdcard/Android/data/com.dts.freefireth/files/temp")
+
+for file in "${SUSP_FILES[@]}"; do
+    if [ -e "$file" ]; then
+        echo -e "${R}▲ Arquivo suspeito encontrado: $file${NC}"
+        ((DETECCOES++))
+    fi
+done
+
+# ===================== RESULTADO FINAL =====================
+echo -e "\n${C}════════════════════════════════════════════${NC}"
+if [ $DETECCOES -gt 0 ]; then
+    echo -e "${R}🚨 $DETECCOES detecção(ões) encontrada(s)${NC}"
+    echo -e "${R}Manipulação ou modificação possivelmente detectada${NC}"
+else
+    echo -e "${G}Nenhuma detecção grave encontrada${NC}"
+fi
+
+echo -e "\n${G}Scan finalizado por ZackSS 1.1${NC}"
+echo -e "${Y}Em caso de dúvida, procure o Keller no Discord${NC}\n"
+
+echo -e "${W}~/ZackSS-Android $ ${NC}"
